@@ -61,9 +61,9 @@ $delPermission2 = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAcc
 $reqGraph.ResourceAccess = $delPermission1,$delPermission2
 
 
-$CAAppReg = get-AzureADApplication -filter "DisplayName eq 'AAD Data PowerShell Tool'"
+$AppReg = get-AzureADApplication -filter "DisplayName eq 'AAD Data PowerShell Tool'"
 
-    if ($CAAppReg -eq $null)
+    if ($AppReg -eq $null)
         { 
             New-AzureADApplication -DisplayName "AAD Data PowerShell Tool" -PublicClient $true -ReplyUrls urn:ietf:wg:oauth:2.0:oob -RequiredResourceAccess $reqGraph
             Write-Host "Waiting for App Regitrationcls to be created (45 secs)" -ForegroundColor Yellow
@@ -74,7 +74,7 @@ $CAAppReg = get-AzureADApplication -filter "DisplayName eq 'AAD Data PowerShell 
     else 
         {
             Write-Host "AAD Data PowerShell Tool Tool already configured" -ForegroundColor Yellow
-            Write-Host "App Registration ID is " $CAAppReg.appid -ForegroundColor Green
+            Write-Host "App Registration ID is " $AppReg.appid -ForegroundColor Green
 
         }
 
