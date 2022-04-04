@@ -241,12 +241,13 @@ NAME: Get-AADLastLogins
     
     $graphApiVersion = "Beta"
     #$Resource = "deviceManagement/deviceEnrollmentConfigurations?`$expand=assignments"
-    $Resource =  "users?`$select=displayName,userPrincipalName,signInActivity&filter=signInActivity/lastSignInDateTime le 2022-03-01T00:00:00Z"
+    #$Resource =  "users?`$select=displayName,userPrincipalName,signInActivity&filter=signInActivity/lastSignInDateTime le 2022-03-01T00:00:00Z"
+	$Resource =  "users?`$select=displayName,userPrincipalName,signInActivity"
 
         try {
             
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value
+        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value | Where-Object  {$_.userPrincipalName -Match "^$query.*"}
     
         }
         
@@ -268,6 +269,9 @@ NAME: Get-AADLastLogins
     }
 
 ####################################################
+
+
+$query = Read-Host -Prompt "Starts with"
 
 $ExportPath = Read-Host -Prompt "Please specify a path to export the policy data to e.g. C:\AADOutput"
 
@@ -308,22 +312,8 @@ $AADLastLogins = Get-AADLastLogins
 Write-Output $AADLastLogins
 
 $FileName = "AADLastLogins"
-#New-Item "$ExportPath\$FileName.txt" -ItemType File -Force
-#$AADLastLogins | Out-File -FilePath "$ExportPath\$FileName.txt"
+
 New-Item "$ExportPath\$FileName.json" -ItemType File -Force
 
-foreach ($ALL in $AADLastLogins)
-
-{
-	# Export-JSONData -JSON $CAP -ExportPath $ExportPath
-	
-	#$FileName = $($ALL.displayName) -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-	 
-
-   
-     $JSON_DATA = $ALL | ConvertTo-Json -depth 5
-	 $JSON_Data | Out-File -FilePath "$ExportPath\$FileName.json" -Append -Encoding ascii
-
-
-}
-
+$CSV = $AADLastLogins | ConvertTo-Csv -NoTypeInformation
+$CSV | Out-File -FilePath "$ExportPath\$FileName.csv" 
