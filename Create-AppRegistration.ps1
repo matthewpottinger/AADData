@@ -53,16 +53,12 @@ $svcprincipal = Get-AzureADServicePrincipal -All $true | ? { $_.DisplayName -eq 
 $reqGraph = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
 $reqGraph.ResourceAppId = $svcprincipal.AppId
 
-$delPermission1 = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "5f8c59db-677d-491f-a6b8-5f174b11ec1d","Scope" # Group.Read.All (Groups)
-$delPermission2 = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "572fea84-0151-49b2-9301-11cb16974376","Scope" # Policy.Read.All (CA)
-$delPermission3 = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "c79f8feb-a9db-4090-85f9-90d820caa0eb","Scope" # Application.Read.All (CA)
-$delPermission4 = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "ad902697-1014-4ef5-81ef-2b4301988e8c","Scope" # Policy.ReadWrite.ConditionalAccess (CA)
-$delPermission5 = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "7b3f05d5-f68c-4b8d-8c59-a2ecd12f24af","Scope" # DeviceManagementApps.ReadWrite.All (MAM)
-$delPermission6 = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "662ed50a-ac44-4eef-ad86-62eed9be2a29","Scope" # DeviceManagementServiceConfig.ReadWrite.All (DER)
-$delPermission7 = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "0883f392-0a7a-443d-8c76-16a6d39c7b63","Scope" # DeviceManagementConfiguration.ReadWrite.All
+$delPermission1 = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "e4c9e354-4dc5-45b8-9e7c-e1393b0b1a20","Scope" #AuditLog.Read.All
+$delPermission2 = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "a154be20-db9c-4678-8ab7-66f6cc099a59","Scope" #User.Read.All
 
 
-$reqGraph.ResourceAccess = $delPermission1, $delPermission2, $delPermission3, $delPermission4,$delPermission5,$delPermission6,$delPermission7
+
+$reqGraph.ResourceAccess = $delPermission1,$delPermission2
 
 
 $CAAppReg = get-AzureADApplication -filter "DisplayName eq 'AAD Data PowerShell Tool'"
