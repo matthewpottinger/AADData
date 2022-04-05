@@ -242,12 +242,12 @@ NAME: Get-AADLastLogins
     $graphApiVersion = "Beta"
     #$Resource = "deviceManagement/deviceEnrollmentConfigurations?`$expand=assignments"
     #$Resource =  "users?`$select=displayName,userPrincipalName,signInActivity&filter=signInActivity/lastSignInDateTime le 2022-03-01T00:00:00Z"
-	$Resource =  "users?`$select=displayName,userPrincipalName,signInActivity"
+	$Resource =  "users?`$top=999&`$filter=startswith(userPrincipalName,'$query')&`$select=userPrincipalName,signInActivity"
 
         try {
             
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value | Where-Object  {$_.userPrincipalName -Match "^$query.*"}
+        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get) 
     
         }
         
@@ -309,11 +309,17 @@ if (!(Test-Path "$ExportPath"))
 
 $AADLastLogins = Get-AADLastLogins
 
-Write-Output $AADLastLogins
+
+$result = ($AADLastLogins | select-object Value).Value
+$Export = $result | select UserPrincipalName,@{n="LastLoginDate";e={$_.signInActivity.lastSignInDateTime}}
+$Export | select UserPrincipalName,@{Name='LastLoginDate';Expression={[datetime]::Parse($_.LastLoginDate)}} | Out-GridView
+
+
+#Write-Output $AADLastLogins.value
 
 $FileName = "AADLastLogins"
 
 New-Item "$ExportPath\$FileName.json" -ItemType File -Force
 
-$CSV = $AADLastLogins | ConvertTo-Csv -NoTypeInformation
+$CSV = $export | ConvertTo-Csv -NoTypeInformation
 $CSV | Out-File -FilePath "$ExportPath\$FileName.csv" 
