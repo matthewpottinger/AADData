@@ -242,7 +242,7 @@ NAME: Get-AADLastLogins
     $graphApiVersion = "Beta"
     #$Resource = "deviceManagement/deviceEnrollmentConfigurations?`$expand=assignments"
     #$Resource =  "users?`$select=displayName,userPrincipalName,signInActivity&filter=signInActivity/lastSignInDateTime le 2022-03-01T00:00:00Z"
-	$Resource =  "users?`$top=999&`$filter=startswith(userPrincipalName,'$query')&`$select=userPrincipalName,signInActivity"
+	$Resource =  "users?`$top=999&`$filter=startswith(userPrincipalName,'$query')&`$select=userPrincipalName,signInActivity,accountEnabled"
 
         try {
             
@@ -311,8 +311,8 @@ $AADLastLogins = Get-AADLastLogins
 
 
 $result = ($AADLastLogins | select-object Value).Value
-$Export = $result | select UserPrincipalName,@{n="LastLoginDate";e={$_.signInActivity.lastSignInDateTime}}
-$Export | select UserPrincipalName,@{Name='LastLoginDate';Expression={[datetime]::Parse($_.LastLoginDate)}} | Out-GridView
+$Export = $result | select UserPrincipalName,accountEnabled,@{n="LastLoginDate";e={$_.signInActivity.lastSignInDateTime}}
+$Export | select UserPrincipalName,accountEnabled,@{Name='LastLoginDate';Expression={[datetime]::Parse($_.LastLoginDate)}} | Out-GridView
 
 
 #Write-Output $AADLastLogins.value
